@@ -1,0 +1,20 @@
+language: node_js
+node_js:
+- 4
+- 5
+- 6
+notifications:
+  email: false
+  webhooks:
+    urls:
+    - https://webhooks.gitter.im/e/117063f9c1031b17e557
+    on_start: never
+    on_failure: change
+deploy:
+  provider: npm
+  email: hello@mylisabox.com
+  api_key:
+    secure: Augq17lXXFKZPX92X2ITxwRkwEGqponSyzdCbqBOkoY8m1+8SxeduTyHhK1KHa4/DYgMpeTSyCMcqCftbm4Ngq6tva7sRgoHO64Mzd5jffAWzXIERHkDp+apiX4MetOHTRV5QxV3I/xzKD0GRuDw57HKra7OTJcCOiKqx6CIz2czUMsS4YxRpZIF3k9wtGSKjMW/36+eQj3bgM2lUl0pDOwaIvvY6sr1a6S0ks0YANE0xyxBdqd2Ceg77FZ5TpVODO36iF8D0C/ReviaCLMzU+4UQS6+HWmL7IUsZHBeiDslXbIcysRP3C+JCEkZvrjZ3cqMNQK0eWeCUcWmsrTzXDYXfyQiOiuJzrjKCute/H+GYomktXeWeGN+cHXQWWMwRsbPcZ2SVxW9fydyXrx6isIY+5wWHTxWdjswTRJ2K+y+x7XJ8BCyNc9y3IAviRq1oGBca42yPGUOOIzMxZS+l2+UZaKSwGs5fFTO1LnZHgANeR73T/8OkFgVy6KlqxP3damNVJ4BnYT1edZt+DP/oCsOo7h7DwNFGuS/Wo5G2vZx9gMtZbrHlARb2HNhenV+rhBH774Y7EPiNHkIAmG3yH8s8FDOOwCxPpI+l+UONzPIBGDCQxOFg3Pk0TCbNRa6MQ1jT5y9LzPLf7YC+FOsi4dM5Li4rHXcrHy8otnaggk=
+  on:
+    tags: true
+    repo: mylisabox/lisa-plugin-hue
