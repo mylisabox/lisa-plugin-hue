@@ -1,21 +1,21 @@
 'use strict'
 
 const Plugin = require('lisa-plugin')
-const hue = require("node-hue-api");
-const HueApi = hue.HueApi;
-const fs = require("fs");
-const tinycolor = require("tinycolor2");
+const hue = require('node-hue-api')
+const HueApi = hue.HueApi
+const fs = require('fs')
+//const tinycolor = require("tinycolor2")
 
 module.exports = class HuePlugin extends Plugin {
   _negotiateError(err, next) {
-    if (err.name == "Api Error") {
-      if (err.message == "link button not pressed") {
+    if (err.name == 'Api Error') {
+      if (err.message == 'link button not pressed') {
         //TODO
       }
-      else if (err.message == "unauthorized user") {
+      else if (err.message == 'unauthorized user') {
         //TODO
       }
-      this.log.debug("Need " + err.message)
+      this.log.debug('Need ' + err.message)
       next()
     }
     else {
@@ -23,7 +23,7 @@ module.exports = class HuePlugin extends Plugin {
         next(err)
       }
       else {
-        this.log.debug("Need " + err.message)
+        this.log.debug('Need ' + err.message)
       }
     }
   }
@@ -41,7 +41,7 @@ module.exports = class HuePlugin extends Plugin {
       })
     }
     else {
-      next(new Error("hue_error_not_found"))
+      next(new Error('hue_error_not_found'))
     }
   }
 
@@ -54,26 +54,26 @@ module.exports = class HuePlugin extends Plugin {
     return new Promise((resolve, reject) => {
       hue.nupnpSearch((err, result) => {
         if (err) {
-          this._negotiateError(err, next)
+          this._negotiateError(err, null)
         }
         else if (result.length == 0) {
-          reject(new Error("hue_error_not_found"))
+          reject(new Error('hue_error_not_found'))
         }
         else {
           const hostname = result[0].ipaddress//First bridge
 
-          if (fs.existsSync(__dirname + "/infos")) {
-            const userInfos = fs.readFileSync(__dirname + "/infos", "utf8")
+          if (fs.existsSync(__dirname + '/infos')) {
+            const userInfos = fs.readFileSync(__dirname + '/infos', 'utf8')
             this._config(hostname, userInfos)
           }
           else {
             const api = new HueApi()
             api.createUser(hostname, null, null, (err, user) => {
               if (err) {
-                this._negotiateError(err, next);
+                this._negotiateError(err, null)
               }
               else {
-                fs.writeFile(__dirname + "/infos", user, err => {
+                fs.writeFile(__dirname + '/infos', user, err => {
                   if (err) {
                     reject(err)
                   }
