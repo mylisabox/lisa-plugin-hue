@@ -28,3 +28,4 @@ deploy:
   on:
     tags: true
     repo: mylisabox/lisa-plugin-hue
+    node: 6

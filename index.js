@@ -1,49 +1,9 @@
 'use strict'
 
 const Plugin = require('lisa-plugin')
-const hue = require('node-hue-api')
-const HueApi = hue.HueApi
-const fs = require('fs')
 //const tinycolor = require("tinycolor2")
 
 module.exports = class HuePlugin extends Plugin {
-  _negotiateError(err, next) {
-    if (err.name == 'Api Error') {
-      if (err.message == 'link button not pressed') {
-        //TODO
-      }
-      else if (err.message == 'unauthorized user') {
-        //TODO
-      }
-      this.log.debug('Need ' + err.message)
-      next()
-    }
-    else {
-      if (next) {
-        next(err)
-      }
-      else {
-        this.log.debug('Need ' + err.message)
-      }
-    }
-  }
-
-  _config(hostname, user, next) {
-    this.api = new HueApi(hostname, user)
-    if (this.api) {
-      this.api.config((err, config) => {
-        if (err) {
-          this._negotiateError(err, next)
-        }
-        else {
-          this.deviceSearch()
-        }
-      })
-    }
-    else {
-      next(new Error('hue_error_not_found'))
-    }
-  }
 
   /**
    * Initialisation of your plugin
@@ -51,6 +11,8 @@ module.exports = class HuePlugin extends Plugin {
    * @returns Promise
    */
   init() {
+    return this.app.services.HUEService.init()
+    /*
     return new Promise((resolve, reject) => {
       hue.nupnpSearch((err, result) => {
         if (err) {
@@ -86,7 +48,7 @@ module.exports = class HuePlugin extends Plugin {
           }
         }
       })
-    })
+     })*/
   }
 
   /**
@@ -111,7 +73,8 @@ module.exports = class HuePlugin extends Plugin {
     super(app, {
       config: require('./config'),
       api: require('./api'),
-      pkg: require('./package')
+      pkg: require('./package'),
+      bots: require('./bots')
     })
   }
 }
