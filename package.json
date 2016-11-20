@@ -9,18 +9,18 @@
     "extends": "trails"
   },
   "dependencies": {
-    "lisa-plugin": "^0.0.6",
+    "lisa-plugin": "^0.0.8",
     "node-hue-api": "^2.3.0",
+    "snyk": "^1.19.1",
     "tinycolor2": "^1.4.1"
   },
   "devDependencies": {
-    "eslint": "^3.9.0",
-    "eslint-config-trails": "^1.0.8",
-    "lisa-box": "^0.0.11",
-    "lodash": "^4.16.4",
+    "eslint": "^3.10.2",
+    "eslint-config-trails": "^1.2.0",
+    "lisa-box": "^0.0.13",
+    "lodash": "^4.17.2",
     "mocha": "^3.1.2",
     "smokesignals": "^1.2.2",
-    "snyk": "^1.19.1",
     "trails": "^1.1.0"
   }
 }

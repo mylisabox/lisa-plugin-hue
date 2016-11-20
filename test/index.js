@@ -14,7 +14,7 @@ before(() => {
   }
   global.app = new TrailsApp(app)
   return global.app.start().then(() => {
-    return global.app.services.PluginService._addPlugin('lisa-plugin-hue')
+    return global.app.services.PluginService._addPlugin('lisa-plugin-hue') // eslint-disable-line no-underscore-dangle
   })
 })
 
