@@ -4,6 +4,7 @@ const Service = require('lisa-plugin').Service
 const hue = require('node-hue-api')
 const HueApi = hue.HueApi
 const tinycolor = require('tinycolor2')
+const _ = require('lodash')
 
 /**
  * @module HUEService
@@ -28,37 +29,21 @@ module.exports = class HUEService extends Service {
 
     const newDevice = {
       roomId: roomId,
-      internalId: light.id,
-      values: {'off': '/images/widgets/light_off.png', 'on': '/images/widgets/light_on.png'},
-      value: light.state.on ? 'on' : 'off',
-      bri: light.state.bri,
-      color: color,
+      data: {
+        internalId: light.id,
+        values: {'off': '/images/widgets/light_off.png', 'on': '/images/widgets/light_on.png'},
+        state: light.state.on ? 'on' : 'off',
+        bri: bri,
+        color: color,
+        type: light.type,
+      },
       name: light.name,
-      type: light.type,
-      template: `<lisa-vbox>
-                  <lisa-hbox>
-                    <lisa-color-picker (onChange)="onValueChange($event)"
-                                       [value]="device.data.color" 
-                                       name="color"
-                                       path="HUEController.setLightState"
-                                       [flex]="0.6"></lisa-color-picker>
-                    <lisa-image-button (onChange)="onValueChange($event)"
-                                       name="state"
-                                       [value]="device.data.value" 
-                                       [values]="device.data.values" 
-                                       path="HUEController.setLightState"
-                                       ></lisa-image-button>
-                    <lisa-space [flex]="0.6"></lisa-space>
-                  </lisa-hbox>
-                  <lisa-slider (onChange)="onValueChange($event)"
-                               [value]="device.data.bri" 
-                               name="bri"
-                               path="HUEController.setLightState"
-                               [flex]="0.4"></lisa-slider>
-                </lisa-vbox>`
+      template: light.type.toLowerCase().indexOf('color') != -1 ?
+        require('../../widgets/hue_color.json') : require('../../widgets/hue_white.json')
     }
     if (existingLisaLight) {
       newDevice.id = existingLisaLight.id
+      newDevice.roomId = existingLisaLight.roomId
       newDevice.name = existingLisaLight.name // don't overide name each time there an update
     }
     return newDevice
@@ -68,9 +53,14 @@ module.exports = class HUEService extends Service {
     return this.lisa.findDevices().then(devices => {
       const newLights = []
       lights.forEach(light => {
-        const lightExist = devices.find(device => device.internalId === light.id)
+        const lightExist = devices.find(device => device.data.internalId === light.id)
+        delete lightExist.createdAt
+        delete lightExist.updatedAt
+        delete lightExist.pluginName
         const newDevice = this._prepareLightData(light, lightExist ? lightExist.roomId : null, lightExist)
-        newLights.push(this.lisa.createOrUpdateDevices(newDevice))
+        if (!_.isEqual(newDevice, lightExist)) {
+          newLights.push(this.lisa.createOrUpdateDevices(newDevice))
+        }
       })
       return Promise.all(newLights)
     })
@@ -109,7 +99,7 @@ module.exports = class HUEService extends Service {
       return Promise.all(todos).then(results => {
         const lights = results[0].lights
         if (manageGroups) {
-          const groups = results[1].filter(item => item.type.toLowerCase() === 'room')
+          const groups = results[1].filter(item => item.type.toLowerCase() == 'room')
           return this._addRoomsAndLights(groups, lights)
         }
         else {
@@ -121,12 +111,6 @@ module.exports = class HUEService extends Service {
 
   _manageBridge(bridge, preferences = {bridges: {}}) {
     const hostname = bridge.ipaddress
-    //FIXME remove when trailpack-cache is working
-    preferences = {
-      bridges: {}
-    }
-    preferences.bridges[bridge.id] = 'ty76iZ7rxg-6BWPEZhUoMYcfIhjiigTV0cowkBUq'
-    //END FIXME
 
     if (preferences && preferences.bridges && preferences.bridges[bridge.id]) {
       return this._config(hostname, preferences.bridges[bridge.id])
@@ -182,10 +166,12 @@ module.exports = class HUEService extends Service {
       lightState.off()
     }
     if (key == 'color') {
+      lightState.on()
       const hsl = tinycolor(newValue).toHsl()
       lightState.hsl(hsl.h, hsl.s * 100, hsl.l * 100)
     }
     if (key == 'colorRGB') {
+      lightState.on()
       const hsl = tinycolor({
         r: newValue.r || newValue[0],
         g: newValue.g || newValue[1],
@@ -194,6 +180,7 @@ module.exports = class HUEService extends Service {
       lightState.hsl(hsl.h, hsl.s * 100, hsl.l * 100)
     }
     if (key == 'colorHSL') {
+      lightState.on()
       lightState.hsl(
         newValue.h || newValue[0],
         newValue.s || newValue[1],
@@ -201,17 +188,23 @@ module.exports = class HUEService extends Service {
       )
     }
     if (key == 'bri') {
+      lightState.on()
       lightState.brightness(newValue)
     }
 
     if (this.api) {
-      device[key] = newValue
-      return this.api.setLightState(device.internalId, lightState).then(result => {
+      device.data[key] = newValue
+      if (lightState._values.on) {
+        device.data['state'] = 'on'
+      }
+      return this.api.setLightState(device.data.internalId, lightState).then(result => {
         return this.lisa.createOrUpdateDevices(device)
       })
     }
     else {
-      return Promise.reject(new Error('hue_error_not_found'))
+      return this._searchBridges().catch(err => {
+        return Promise.reject(new Error('hue_error_not_found'))
+      })
     }
   }
 

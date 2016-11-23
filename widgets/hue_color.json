@@ -1,0 +1,35 @@
+{
+  "type": "vbox",
+  "children": [
+    {
+      "type": "hbox",
+      "children": [
+        {
+          "type": "color-picker",
+          "name": "color",
+          "flex": 0.6,
+          "path": "HUEController.setLightState",
+          "value": "data.color"
+        },
+        {
+          "type": "image-button",
+          "name": "state",
+          "path": "HUEController.setLightState",
+          "values": "data.values",
+          "value": "data.state"
+        },
+        {
+          "type": "space",
+          "flex": 0.6
+        }
+      ]
+    },
+    {
+      "type": "slider",
+      "name": "bri",
+      "flex": 0.4,
+      "path": "HUEController.setLightState",
+      "value": "data.bri"
+    }
+  ]
+}

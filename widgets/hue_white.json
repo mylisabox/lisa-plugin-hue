@@ -1,0 +1,32 @@
+{
+  "type": "vbox",
+  "children": [
+    {
+      "type": "hbox",
+      "children": [
+        {
+          "type": "space",
+          "flex": 0.6
+        },
+        {
+          "type": "image-button",
+          "name": "state",
+          "path": "HUEController.setLightState",
+          "values": "data.values",
+          "value": "data.state"
+        },
+        {
+          "type": "space",
+          "flex": 0.6
+        }
+      ]
+    },
+    {
+      "type": "slider",
+      "name": "bri",
+      "flex": 0.4,
+      "path": "HUEController.setLightState",
+      "value": "data.bri"
+    }
+  ]
+}

@@ -28,10 +28,12 @@
       "name": "Turn light on",
       "sentences": {
         "fr": [
+          "lumière",
           "allume(?: +\\w+){0,2} +lumière(?: +\\w+){0,2} +%room%",
           "allume(?: +\\w+){0,4} +%room%"
         ],
         "en": [
+          "light",
           "(?:turn|switch) on(?: +\\w+){0,2} +%room%",
           "(?:turn|switch)(?: +\\w+){0,2} +%room% on"
         ]
