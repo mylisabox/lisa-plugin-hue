@@ -157,43 +157,52 @@ module.exports = class HUEService extends Service {
     return this._searchBridges()
   }
 
-  setLightState(device, key, newValue) {
+  setLightState(device, values) {
     const lightState = hue.lightState.create()
-    if (key == 'state' && newValue == 'on') {
-      lightState.on()
-    }
-    if (key == 'state' && newValue == 'off') {
-      lightState.off()
-    }
-    if (key == 'color') {
-      lightState.on()
-      const hsl = tinycolor(newValue).toHsl()
-      lightState.hsl(hsl.h, hsl.s * 100, hsl.l * 100)
-    }
-    if (key == 'colorRGB') {
-      lightState.on()
-      const hsl = tinycolor({
-        r: newValue.r || newValue[0],
-        g: newValue.g || newValue[1],
-        b: newValue.b || newValue[2]
-      }).toHsl()
-      lightState.hsl(hsl.h, hsl.s * 100, hsl.l * 100)
-    }
-    if (key == 'colorHSL') {
-      lightState.on()
-      lightState.hsl(
-        newValue.h || newValue[0],
-        newValue.s || newValue[1],
-        newValue.l || newValue[2]
-      )
-    }
-    if (key == 'bri') {
-      lightState.on()
-      lightState.brightness(newValue)
-    }
+    _.each(values, (newValue, key) => {
+      let hsl = null
+      if (key == 'state' && newValue == 'on') {
+        lightState.on()
+      }
+      if (key == 'state' && newValue == 'off') {
+        lightState.off()
+      }
+      if (key == 'color') {
+        lightState.on()
+        hsl = tinycolor(newValue).toHsl()
+      }
+      if (key == 'colorRGB') {
+        lightState.on()
+        hsl = tinycolor({
+          r: newValue.r || newValue[0],
+          g: newValue.g || newValue[1],
+          b: newValue.b || newValue[2]
+        }).toHsl()
+      }
+      if (key == 'colorHSL') {
+        lightState.on()
+        lightState.hsl(
+          newValue.h || newValue[0],
+          newValue.s || newValue[1],
+          newValue.l || newValue[2]
+        )
+      }
+      if (key == 'bri') {
+        lightState.on()
+        lightState.brightness(newValue)
+      }
+      if (hsl) {
+        if (values['bri']) {
+          lightState.hsb(hsl.h, hsl.s * 100, +values['bri'])
+        }
+        else {
+          lightState.hsl(hsl.h, hsl.s * 100, hsl.l * 100)
+        }
+      }
+      device.data[key] = newValue
+    })
 
     if (this.api) {
-      device.data[key] = newValue
       if (lightState._values.on) {
         device.data['state'] = 'on'
       }
@@ -207,7 +216,6 @@ module.exports = class HUEService extends Service {
       })
     }
   }
-
 
   init() {
     return this._searchBridges()

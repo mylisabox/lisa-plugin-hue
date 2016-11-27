@@ -7,8 +7,8 @@ const _ = require('lodash')
 const app = _.defaultsDeep(lisa, smokesignals.FailsafeConfig)
 
 before(() => {
-  lisa.config.main.packs.push(require('../'))
   lisa.config.database.models.migrate = 'drop'
+  delete lisa.config.chatbot.params.room
   lisa.config.pluginManager = {
     dist: `${process.cwd()}/..`
   }

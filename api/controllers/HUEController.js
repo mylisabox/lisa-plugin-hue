@@ -8,7 +8,9 @@ const Controller = require('lisa-plugin').Controller
  */
 module.exports = class HUEController extends Controller {
   setLightState(device, key, newValue) {
-    return this.plugin.services.HUEService.setLightState(device, key, newValue)
+    const options = {}
+    options[key] = newValue
+    return this.plugin.services.HUEService.setLightState(device, options)
   }
 
   linkClicked() {

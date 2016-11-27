@@ -1,7 +1,6 @@
 'use strict'
 
 const Plugin = require('lisa-plugin')
-//const tinycolor = require("tinycolor2")
 
 module.exports = class HuePlugin extends Plugin {
 
@@ -29,7 +28,7 @@ module.exports = class HuePlugin extends Plugin {
    * @return Promise
    */
   interact(action, infos) {
-    return Promise.resolve()
+    return this.services.ChatBotService.interact(action, infos)
   }
 
   constructor(app) {

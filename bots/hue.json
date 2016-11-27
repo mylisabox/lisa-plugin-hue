@@ -5,12 +5,12 @@
       "name": "Change light state",
       "sentences": {
         "fr": [
-          "(?:allume|mets|mais|mettre)(?: +\\w+){0,5} +%room% en %color%(?: +\\w+){0,5} +%number% pourcent",
-          "(?:allume|mets|mais|mettre)(?: +\\w+){0,5} +%room% à %number% pourcent %color%"
+          "(?:allume|mets|mais|mettre)(?: +\\w+){0,5} +%room% en %color%(?: +\\w+){0,5} +%number% (?:pourcent|%)",
+          "(?:allume|mets|mais|mettre)(?: +\\w+){0,5} +%room% à %number% (?:pourcent|%) %color%"
         ],
         "en": [
-          "(?:turn|switch|put|set)(?: +\\w+){0,5} +%room% in %number% percent %color%",
-          "(?:turn|switch|put|set)(?: +\\w+){0,5} +%room% in %color%(?: +\\w+){0,5} +%number% percent"
+          "(?:turn|switch|put|set)(?: +\\w+){0,5} +%room% in %number% (?:percent|%) %color%",
+          "(?:turn|switch|put|set)(?: +\\w+){0,5} +%room% in %color%(?: +\\w+){0,5} +%number% (?:percent|%)"
         ]
       },
       "responses": {
@@ -28,7 +28,6 @@
       "name": "Turn light on",
       "sentences": {
         "fr": [
-          "lumière",
           "allume(?: +\\w+){0,2} +lumière(?: +\\w+){0,2} +%room%",
           "allume(?: +\\w+){0,4} +%room%"
         ],
@@ -54,7 +53,7 @@
       "sentences": {
         "fr": [
           "(?:éteins|éteint|éteindre)(?: +\\w+){0,2} +lumière(?: +\\w+){0,2} +%room%",
-          "allume(?: +\\w+){0,4} +%room%"
+          "(?:éteins|éteint|éteindre)(?: +\\w+){0,4} +%room%"
         ],
         "en": [
           "(?:turn|switch) off(?: +\\w+){0,2} +%room%",
@@ -76,12 +75,12 @@
       "name": "Change light's brightness",
       "sentences": {
         "fr": [
-          "lumière(?: +\\w+){0,5} +%room% à %number% pourcent",
-          "%room% à %number% pourcent"
+          "lumière(?: +\\w+){0,5} +%room% à %number% (?:pourcent|%)",
+          "%room% à %number% (?:pourcent|%)"
         ],
         "en": [
-          "light(?: +\\w+){0,5} +%room% to %number% percent",
-          "brightness(?: +\\w+){0,5} +%room% to %number% percent"
+          "light(?: +\\w+){0,5} +%room% to %number% (?:percent|%)",
+          "brightness(?: +\\w+){0,5} +%room% to %number% (?:percent|%)"
         ]
       },
       "responses": {
