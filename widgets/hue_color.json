@@ -6,17 +6,16 @@
       "children": [
         {
           "type": "color-picker",
-          "name": "color",
+          "name": "hue",
           "flex": 0.6,
-          "path": "HUEController.setLightState",
-          "value": "data.color"
+          "value": "hue"
         },
         {
           "type": "image-button",
-          "name": "state",
-          "path": "HUEController.setLightState",
-          "values": "data.values",
-          "value": "data.state"
+          "name": "onoff",
+          "mainIndicator": true,
+          "values": "images",
+          "value": "onoff"
         },
         {
           "type": "space",
@@ -26,10 +25,9 @@
     },
     {
       "type": "slider",
-      "name": "bri",
+      "name": "dim",
       "flex": 0.4,
-      "path": "HUEController.setLightState",
-      "value": "data.bri"
+      "value": "dim"
     }
   ]
 }

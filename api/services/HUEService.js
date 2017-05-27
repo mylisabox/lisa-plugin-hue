@@ -27,19 +27,26 @@ module.exports = class HUEService extends Service {
     const bri = Math.round(light.state.bri * 100 / 255)
     const color = tinycolor('hsv(' + (hue) + ', ' + sat + '%, ' + bri + '%)').toHexString()
 
+    const data = {
+      internalId: light.id,
+      images: {'off': '/images/widgets/light_off.png', 'on': '/images/widgets/light_on.png'},
+      onoff: light.state.on ? 'on' : 'off',
+      dim: bri,
+      type: light.type
+    }
+    const template = light.type.toLowerCase().indexOf('color') != -1 ?
+      require('../../widgets/hue_color.json') : require('../../widgets/hue_white.json')
+
+    if (light.type.toLowerCase().indexOf('color') != -1) {
+      data.hue = color
+    }
+
     const newDevice = {
       roomId: roomId,
-      data: {
-        internalId: light.id,
-        values: {'off': '/images/widgets/light_off.png', 'on': '/images/widgets/light_on.png'},
-        state: light.state.on ? 'on' : 'off',
-        bri: bri,
-        color: color,
-        type: light.type,
-      },
+      data: data,
+      type: this.lisa.DEVICE_TYPE.LIGHT,
       name: light.name,
-      template: light.type.toLowerCase().indexOf('color') != -1 ?
-        require('../../widgets/hue_color.json') : require('../../widgets/hue_white.json')
+      template: template
     }
     if (existingLisaLight) {
       newDevice.id = existingLisaLight.id
@@ -54,9 +61,11 @@ module.exports = class HUEService extends Service {
       const newLights = []
       lights.forEach(light => {
         const lightExist = devices.find(device => device.data.internalId === light.id)
-        delete lightExist.createdAt
-        delete lightExist.updatedAt
-        delete lightExist.pluginName
+        if (lightExist) {
+          delete lightExist.createdAt
+          delete lightExist.updatedAt
+          delete lightExist.pluginName
+        }
         const newDevice = this._prepareLightData(light, lightExist ? lightExist.roomId : null, lightExist)
         if (!_.isEqual(newDevice, lightExist)) {
           newLights.push(this.lisa.createOrUpdateDevices(newDevice))
@@ -111,7 +120,12 @@ module.exports = class HUEService extends Service {
 
   _manageBridge(bridge, preferences = {bridges: {}}) {
     const hostname = bridge.ipaddress
-
+    //FIXME remove when trailpack-cache is working
+    preferences = {
+      bridges: {}
+    }
+    preferences.bridges[bridge.id] = 'ty76iZ7rxg-6BWPEZhUoMYcfIhjiigTV0cowkBUq'
+    //END FIXME
     if (preferences && preferences.bridges && preferences.bridges[bridge.id]) {
       return this._config(hostname, preferences.bridges[bridge.id])
     }
@@ -161,13 +175,13 @@ module.exports = class HUEService extends Service {
     const lightState = hue.lightState.create()
     _.each(values, (newValue, key) => {
       let hsl = null
-      if (key == 'state' && newValue == 'on') {
+      if (key == 'onoff' && newValue == 'on') {
         lightState.on()
       }
-      if (key == 'state' && newValue == 'off') {
+      if (key == 'onoff' && newValue == 'off') {
         lightState.off()
       }
-      if (key == 'color') {
+      if (key == 'hue') {
         lightState.on()
         hsl = tinycolor(newValue).toHsl()
       }
@@ -187,28 +201,35 @@ module.exports = class HUEService extends Service {
           newValue.l || newValue[2]
         )
       }
-      if (key == 'bri') {
+      if (key == 'dim') {
         lightState.on()
         lightState.brightness(newValue)
       }
       if (hsl) {
-        if (values['bri']) {
-          lightState.hsb(hsl.h, hsl.s * 100, +values['bri'])
+        if (values.dim) {
+          lightState.hsb(hsl.h, hsl.s * 100, +values.dim)
         }
         else {
           lightState.hsl(hsl.h, hsl.s * 100, hsl.l * 100)
         }
       }
-      device.data[key] = newValue
+      if (device) {
+        device.data[key] = newValue
+      }
     })
 
     if (this.api) {
-      if (lightState._values.on) {
-        device.data['state'] = 'on'
+      if (lightState._values.on && device) {
+        device.data.onoff = 'on'
       }
-      return this.api.setLightState(device.data.internalId, lightState).then(result => {
-        return this.lisa.createOrUpdateDevices(device)
-      })
+      if (device) {
+        return this.api.setLightState(device.data.internalId, lightState).then(result => {
+          return this.lisa.createOrUpdateDevices(device)
+        })
+      }
+      else {
+        return this.api.setGroupLightState(0, lightState).then(() => this.searchLights())
+      }
     }
     else {
       return this._searchBridges().catch(err => {
@@ -218,6 +239,9 @@ module.exports = class HUEService extends Service {
   }
 
   init() {
+    setInterval(() => {
+      this.searchLights()
+    }, 30000)
     return this._searchBridges()
   }
 }

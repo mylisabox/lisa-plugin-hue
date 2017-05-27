@@ -4,6 +4,22 @@ const Plugin = require('lisa-plugin')
 
 module.exports = class HuePlugin extends Plugin {
 
+  setDeviceValue(device, key, newValue) {
+    const options = {}
+    options[key] = newValue
+    return this.services.HUEService.setLightState(device, options)
+  }
+
+  setDevicesValue(devices, key, newValue) {
+    const options = {}
+    options[key] = newValue
+    const values = []
+    for (let device of devices) {
+      values.push(this.services.HUEService.setLightState(device, options))
+    }
+    return Promise.all(values)
+  }
+
   /**
    * Initialisation of your plugin
    * Called once, when plugin is loaded
@@ -16,10 +32,9 @@ module.exports = class HuePlugin extends Plugin {
   /**
    * Called automatically to search for new devices
    * @return Promise
-   */
-  searchDevices() {
+    searchDevices() {
     return this.services.HUEService.searchLights()
-  }
+  }*/
 
   /**
    * Called when
@@ -33,10 +48,8 @@ module.exports = class HuePlugin extends Plugin {
 
   constructor(app) {
     super(app, {
-      config: require('./config'),
       api: require('./api'),
-      pkg: require('./package'),
-      bots: require('./bots')
+      pkg: require('./package')
     })
   }
 }

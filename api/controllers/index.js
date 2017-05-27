@@ -1,1 +1,0 @@
-exports.HUEController = require('./HUEController')

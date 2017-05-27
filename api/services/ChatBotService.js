@@ -15,33 +15,46 @@ module.exports = class ChatBotService extends Service {
     const room = infos.fields.room
     const options = {}
     switch (action) {
-      case 'HUE_ALL':
-        options['state'] = 'on'
-        options['bri'] = infos.fields.number
-        options['color'] = infos.fields.color.value
+      case 'LIGHT_ALL':
+        options['onoff'] = 'on'
+        options['dim'] = infos.fields.number
+        options['hue'] = infos.fields.color.value
         break
-      case 'HUE_TURN_ON':
-        options['state'] = 'on'
+      case 'LIGHT_TURN_ON':
+        options['onoff'] = 'on'
         break
-      case 'HUE_TURN_OFF':
-        options['state'] = 'off'
+      case 'LIGHT_TURN_OFF':
+      case 'LIGHT_TURN_OFF':
+        options['onoff'] = 'off'
         break
-      case 'HUE_BRIGHTNESS':
-        options['bri'] = infos.fields.number
+      case 'LIGHT_BRIGHTNESS':
+        options['dim'] = infos.fields.number
         break
-      case 'HUE_COLOR':
-        options['color'] = infos.fields.color.value
+      case 'LIGHT_COLOR':
+        options['hue'] = infos.fields.color.value
         break
     }
-    return this.lisa.findDevices({
-      roomId: room.id
-    }).then(devices => {
-      const setStates = []
-      devices.forEach(device => {
-        setStates.push(this.plugin.services.HUEService.setLightState(device, options))
+
+    const criteria = {}
+    if (room) {
+      criteria.roomId = room.id
+
+      return this.lisa.findDevices(criteria).then(devices => {
+        const setStates = []
+        let promise = Promise.resolve()
+        let nextPromise = promise
+        const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+        devices.forEach(device => {
+          const p = this.plugin.services.HUEService.setLightState(device, options)
+          promise = nextPromise.then(() => delay(30000).then(() => p))
+          nextPromise = p
+        })
+        return promise
       })
-      return Promise.all(setStates)
-    })
+    }
+    else {
+      return this.plugin.services.HUEService.setLightState(null, options)
+    }
   }
 
 }
