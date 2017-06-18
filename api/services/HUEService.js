@@ -241,7 +241,7 @@ module.exports = class HUEService extends Service {
   init() {
     setInterval(() => {
       this.searchLights()
-    }, 30000)
+    }, 60000)
     return this._searchBridges()
   }
 }
