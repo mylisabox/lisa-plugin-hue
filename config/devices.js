@@ -8,7 +8,8 @@ module.exports = [
       en: 'Add an HUE Light',
       fr: 'Ajout d\'une lampe HUE'
     },
-    pairing: 'list',
+    driver: 'light',
+    pairing: 'custom',
     image: 'hue_light.png',
     settings: []
   }

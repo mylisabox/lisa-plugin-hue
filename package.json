@@ -1,88 +1,25 @@
 {
   "name": "lisa-plugin-hue",
   "main": "index.js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "scripts": {
     "test": "eslint --fix . && mocha"
-  },
-  "lisa": {
-    "devices": [
-      {
-        "fr": {
-          "name": "Lampe",
-          "keywords": [
-            "lumière",
-            "ampoule",
-            "lampe",
-            "hue",
-            "philips"
-          ]
-        },
-        "en": {
-          "name": "Light",
-          "keywords": [
-            "light",
-            "bulb",
-            "hue",
-            "philips"
-          ]
-        }
-      },
-      {
-        "fr": {
-          "name": "Intérupteur",
-          "keywords": [
-            "intérupteur",
-            "switch",
-            "hue",
-            "philips"
-          ]
-        },
-        "en": {
-          "name": "Dimmer Switch",
-          "keywords": [
-            "switch",
-            "dimmer",
-            "hue",
-            "philips"
-          ]
-        }
-      },
-      {
-        "fr": {
-          "name": "Tap",
-          "keywords": [
-            "tap",
-            "hue",
-            "philips"
-          ]
-        },
-        "en": {
-          "name": "Tap",
-          "keywords": [
-            "tap",
-            "hue",
-            "philips"
-          ]
-        }
-      }
-    ]
   },
   "eslintConfig": {
     "extends": "trails"
   },
   "dependencies": {
-    "lisa-plugin": "0.0.12",
-    "node-hue-api": "^2.4.2",
+    "huejay": "^1.5.0",
+    "lodash": "^4.17.4",
+    "lisa-plugin": "^0.0.15",
     "tinycolor2": "^1.4.1"
   },
   "devDependencies": {
-    "eslint": "^3.10.2",
-    "eslint-config-trails": "^1.2.0",
-    "lisa-box": "^0.0.13",
-    "lodash": "^4.17.2",
-    "mocha": "^3.1.2",
-    "smokesignals": "^1.2.2",
-    "trails": "^1.1.0"
+    "eslint": "^4.1.1",
+    "eslint-config-trails": "^3.0.0",
+    "lisa-box": "^0.0.21",
+    "mocha": "^3.4.2",
+    "smokesignals": "^3.0.3",
+    "trails": "^2.0.2"
   }
 }

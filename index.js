@@ -1,24 +1,9 @@
 'use strict'
 
 const Plugin = require('lisa-plugin')
+const BridgesManager = require('./lib').BridgesManager
 
 module.exports = class HuePlugin extends Plugin {
-
-  setDeviceValue(device, key, newValue) {
-    const options = {}
-    options[key] = newValue
-    return this.services.HUEService.setLightState(device, options)
-  }
-
-  setDevicesValue(devices, key, newValue) {
-    const options = {}
-    options[key] = newValue
-    const values = []
-    for (let device of devices) {
-      values.push(this.services.HUEService.setLightState(device, options))
-    }
-    return Promise.all(values)
-  }
 
   /**
    * Initialisation of your plugin
@@ -26,15 +11,12 @@ module.exports = class HuePlugin extends Plugin {
    * @returns Promise
    */
   init() {
-    return this.services.HUEService.init()
+    this.bridgesManager = new BridgesManager(this.lisa)
+    return super.init().then(() => this.bridgesManager.search())
+      .catch(err => {
+        console.log(err)
+      })
   }
-
-  /**
-   * Called automatically to search for new devices
-   * @return Promise
-    searchDevices() {
-    return this.services.HUEService.searchLights()
-  }*/
 
   /**
    * Called when
@@ -43,12 +25,42 @@ module.exports = class HuePlugin extends Plugin {
    * @return Promise
    */
   interact(action, infos) {
-    return this.services.ChatBotService.interact(action, infos)
+    const room = infos.fields.room
+    const options = {}
+    switch (action) {
+      case 'LIGHT_TURN_ON':
+        options['onoff'] = 'on'
+        if (infos.fields.number) {
+          options['dim'] = infos.fields.number
+        }
+        if (infos.fields.color) {
+          options['hue'] = infos.fields.color.value
+        }
+        break
+      case 'LIGHT_TURN_OFF':
+        options['onoff'] = 'off'
+        break
+      case 'LIGHT_BRIGHTNESS':
+        options['dim'] = infos.fields.number
+        break
+    }
+
+    const criteria = {}
+    if (room) {
+      criteria.roomId = room.id
+
+      return this.lisa.findDevices(criteria).then(devices => {
+        return this.drivers['light'].setDevicesValues(devices, options)
+      })
+    }
+    else {
+      return this.drivers['light'].setDevicesValues(null, options)
+    }
   }
 
   constructor(app) {
     super(app, {
-      api: require('./api'),
+      drivers: require('./drivers'),
       config: require('./config'),
       pkg: require('./package')
     })
