@@ -14,7 +14,7 @@ module.exports = class HuePlugin extends Plugin {
     this.bridgesManager = new BridgesManager(this.lisa)
     return super.init().then(() => this.bridgesManager.search())
       .catch(err => {
-        console.log(err)
+        this.log.error(err)
       })
   }
 
@@ -29,6 +29,7 @@ module.exports = class HuePlugin extends Plugin {
     const options = {}
     switch (action) {
       case 'LIGHT_TURN_ON':
+      case 'DEVICE_TURN_ON':
         options['onoff'] = 'on'
         if (infos.fields.number) {
           options['dim'] = infos.fields.number
@@ -38,6 +39,7 @@ module.exports = class HuePlugin extends Plugin {
         }
         break
       case 'LIGHT_TURN_OFF':
+      case 'DEVICE_TURN_OFF':
         options['onoff'] = 'off'
         break
       case 'LIGHT_BRIGHTNESS':
@@ -52,6 +54,9 @@ module.exports = class HuePlugin extends Plugin {
       return this.lisa.findDevices(criteria).then(devices => {
         return this.drivers['light'].setDevicesValues(devices, options)
       })
+    }
+    else if (device) {
+      return this.drivers['light'].setDevicesValues([device], options)
     }
     else {
       return this.drivers['light'].setDevicesValues(null, options)
