@@ -26,9 +26,11 @@ module.exports = class HuePlugin extends Plugin {
    */
   interact(action, infos) {
     const room = infos.fields.room
+    const device = infos.fields.device
     const options = {}
     switch (action) {
       case 'LIGHT_TURN_ON':
+      case 'DEVICE_TURN_ON':
         options['onoff'] = 'on'
         if (infos.fields.number) {
           options['dim'] = infos.fields.number
@@ -38,6 +40,7 @@ module.exports = class HuePlugin extends Plugin {
         }
         break
       case 'LIGHT_TURN_OFF':
+      case 'DEVICE_TURN_OFF':
         options['onoff'] = 'off'
         break
       case 'LIGHT_BRIGHTNESS':
@@ -53,7 +56,9 @@ module.exports = class HuePlugin extends Plugin {
         return this.drivers['light'].setDevicesValues(devices, options)
       })
     }
-    else {
+    else if (device) {
+      return this.drivers['light'].setDevicesValues([device], options)
+    } else {
       return this.drivers['light'].setDevicesValues(null, options)
     }
   }
