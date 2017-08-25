@@ -26,6 +26,7 @@ module.exports = class HuePlugin extends Plugin {
    */
   interact(action, infos) {
     const room = infos.fields.room
+    const device = infos.fields.device
     const options = {}
     switch (action) {
       case 'LIGHT_TURN_ON':
@@ -58,7 +59,7 @@ module.exports = class HuePlugin extends Plugin {
     else if (device) {
       return this.drivers['light'].setDevicesValues([device], options)
     }
-    else {
+    else{
       return this.drivers['light'].setDevicesValues(null, options)
     }
   }
