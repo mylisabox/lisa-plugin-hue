@@ -25,7 +25,7 @@ module.exports = class HuePlugin extends Plugin {
    * @return Promise
    */
   interact(action, infos) {
-    const room = infos.fields.room
+    const room = infos.fields.room || infos.context.room
     const device = infos.fields.device
     const options = {}
     switch (action) {
