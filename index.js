@@ -25,13 +25,17 @@ module.exports = class HuePlugin extends Plugin {
    * @return Promise
    */
   interact(action, infos) {
-    const room = infos.fields.room || infos.context.room
+    let room = infos.fields.room || infos.context.room
     const device = infos.fields.device
     if (device && device.pluginName !== this.fullName) {
       return Promise.resolve()
     }
     const options = {}
     switch (action) {
+      case 'LIGHT_ALL_TURN_OFF':
+        options['onoff'] = 'off'
+        room = null
+        break
       case 'LIGHT_TURN_ON':
       case 'DEVICE_TURN_ON':
         options['onoff'] = 'on'
