@@ -174,10 +174,10 @@ module.exports = class LightDriver extends Driver {
         item.on = true
         item.brightness = Math.round(newValue * 254 / 100)
       }
-      else if (key === 'hue') {
+      else if (key === 'hue' && item.hue !== undefined) {
         item.on = true
         const hsl = tinycolor(newValue).toHsl()
-        item.brightness = Math.round(hsl.l * 254 / 100)
+        //item.brightness = Math.round(hsl.l * 254 / 100)
         item.hue = Math.round(hsl.h * 182.5487)
         item.saturation = (hsl.s * 100) * 254 / 100
       }
