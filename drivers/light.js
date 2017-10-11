@@ -38,7 +38,7 @@ module.exports = class LightDriver extends Driver {
       results.step = 'bridges_list'
       results.singleChoice = true
     }
-    else if (!data['devices_list'] || data['bridges_list'].id) {
+    else if (!data['devices_list'] && data['bridges_list'].id) {
       const bridgeId = data['bridges_list'].id
       const bridge = bridgeManager.bridges[bridgeId]
       results = bridge.register().then(() => {
