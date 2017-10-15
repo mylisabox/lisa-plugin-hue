@@ -9,7 +9,7 @@
     "extends": "trails"
   },
   "dependencies": {
-    "huejay": "^1.5.0",
+    "huejay": "^1.7.0",
     "lodash": "^4.17.4",
     "lisa-plugin": "^0.0.15",
     "tinycolor2": "^1.4.1"
