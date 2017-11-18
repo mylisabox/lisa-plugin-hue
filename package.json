@@ -17,9 +17,6 @@
   "devDependencies": {
     "eslint": "^4.1.1",
     "eslint-config-trails": "^3.0.0",
-    "lisa-box": "^0.0.21",
-    "mocha": "^3.4.2",
-    "smokesignals": "^3.0.3",
-    "trails": "^2.0.2"
+    "mocha": "^3.4.2"
   }
 }
