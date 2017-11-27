@@ -11,7 +11,9 @@ module.exports = class HuePlugin extends Plugin {
    * @returns Promise
    */
   init() {
-    this.bridgesManager = new BridgesManager(this.lisa)
+    if (!this.bridgesManager) {
+      this.bridgesManager = new BridgesManager(this.lisa)
+    }
     return super.init().then(() => this.bridgesManager.search())
       .catch(err => {
         this.log.error(err)
@@ -32,29 +34,29 @@ module.exports = class HuePlugin extends Plugin {
     }
     const options = {}
     switch (action) {
-    case 'LIGHT_ALL_TURN_OFF':
-      options['onoff'] = 'off'
-      room = null
-      break
-    case 'LIGHT_TURN_ON':
-    case 'DEVICE_TURN_ON':
-      options['onoff'] = 'on'
-      if (infos.fields.number) {
+      case 'LIGHT_ALL_TURN_OFF':
+        options['onoff'] = 'off'
+        room = null
+        break
+      case 'LIGHT_TURN_ON':
+      case 'DEVICE_TURN_ON':
+        options['onoff'] = 'on'
+        if (infos.fields.number) {
+          options['dim'] = infos.fields.number
+        }
+        if (infos.fields.color) {
+          options['hue'] = infos.fields.color.value
+        }
+        break
+      case 'LIGHT_TURN_OFF':
+      case 'DEVICE_TURN_OFF':
+        options['onoff'] = 'off'
+        break
+      case 'LIGHT_BRIGHTNESS':
         options['dim'] = infos.fields.number
-      }
-      if (infos.fields.color) {
-        options['hue'] = infos.fields.color.value
-      }
-      break
-    case 'LIGHT_TURN_OFF':
-    case 'DEVICE_TURN_OFF':
-      options['onoff'] = 'off'
-      break
-    case 'LIGHT_BRIGHTNESS':
-      options['dim'] = infos.fields.number
-      break
-    default:
-      return Promise.resolve()
+        break
+      default:
+        return Promise.resolve()
     }
 
     const criteria = {}
