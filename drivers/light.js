@@ -102,7 +102,8 @@ module.exports = class LightDriver extends Driver {
     const bridgeManager = this.plugin.bridgesManager
     for (const bridgeId in sortedDevices) {
       const bridge = bridgeManager.bridges[bridgeId]
-      data.push(bridge.getDevices().then(() => {
+      const todo = bridge.lights.length === 0 ? bridge.getDevices() : Promise.resolve(bridge.lights)
+      data.push(todo.then(() => {
         const devicesData = []
         for (const device of devices) {
           devicesData.push(bridge.prepareLightData(bridge.getLightById(device.privateData.uniqueId), device.roomId, device))
