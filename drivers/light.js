@@ -42,18 +42,20 @@ module.exports = class LightDriver extends Driver {
       const bridgeId = data['bridges_list'].id
       const bridge = bridgeManager.bridges[bridgeId]
       results = bridge.register().then(() => {
-        return this.lisa.findDevices().then(devices => {
-          return this._findNewLights(devices, bridge.lights).then(lights => Promise.resolve(
-            {
-              devices: lights.map(light => {
-                const lightWithData = bridge.prepareLightData(light)
-                lightWithData.image = light.modelId + '.svg'
-                lightWithData.id = lightWithData.privateData.uniqueId
-                return lightWithData
-              }),
-              step: 'devices_list'
-            }
-          ))
+        return bridge.getDevices().then(() => {
+          return this.lisa.findDevices().then(devices => {
+            return this._findNewLights(devices, bridge.lights).then(lights => Promise.resolve(
+              {
+                devices: lights.map(light => {
+                  const lightWithData = bridge.prepareLightData(light)
+                  lightWithData.image = light.modelId + '.svg'
+                  lightWithData.id = lightWithData.privateData.uniqueId
+                  return lightWithData
+                }),
+                step: 'devices_list'
+              }
+            ))
+          })
         })
       }).catch(err => {
         return Promise.reject({
