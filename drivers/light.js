@@ -104,6 +104,10 @@ module.exports = class LightDriver extends Driver {
     const bridgeManager = this.plugin.bridgesManager
     for (const bridgeId in sortedDevices) {
       const bridge = bridgeManager.bridges[bridgeId]
+      if(bridge == null) {
+        data.push(Promise.resolve(devices))
+        continue
+      }
       const todo = bridge.lights.length === 0 ? bridge.getDevices() : Promise.resolve(bridge.lights)
       data.push(todo.then(() => {
         const devicesData = []
@@ -149,7 +153,7 @@ module.exports = class LightDriver extends Driver {
     }
     else {
       for (const device of devices) {
-        data.push(this.setLightState(device, values))
+        data.push(this.setLightState(device, values))//FIXME when too much lights, we get rejected from HUE; need delay
       }
       return Promise.all(data)
     }
