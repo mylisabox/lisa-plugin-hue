@@ -3,7 +3,9 @@
   "main": "index.js",
   "version": "0.0.2",
   "scripts": {
-    "test": "eslint --fix . && mocha"
+    "test": "eslint --fix . && mocha",
+    "snyk-protect": "snyk protect",
+    "prepublish": "npm run snyk-protect"
   },
   "eslintConfig": {
     "extends": "trails"
@@ -12,11 +14,13 @@
     "huejay": "^1.7.1",
     "lodash": "^4.17.4",
     "lisa-plugin": "^0.0.15",
-    "tinycolor2": "^1.4.1"
+    "tinycolor2": "^1.4.1",
+    "snyk": "^1.192.3"
   },
   "devDependencies": {
     "eslint": "^4.1.1",
     "eslint-config-trails": "^3.0.0",
     "mocha": "^3.4.2"
-  }
+  },
+  "snyk": true
 }
