@@ -81,5 +81,6 @@ module.exports = class HuePlugin extends Plugin {
       config: require('./config'),
       pkg: require('./package')
     })
+    this.bridgesManager = null;
   }
 }

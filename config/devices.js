@@ -11,6 +11,6 @@ module.exports = [
     driver: 'light',
     pairing: 'custom',
     image: 'hue_light.png',
-    settings: []
+    settings: null
   }
 ]
