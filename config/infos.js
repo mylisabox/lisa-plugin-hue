@@ -1,11 +1,12 @@
-module.exports = {
+export default {
   name: {
     en: 'Philips HUE',
-    fr: 'Philips HUE'
+    fr: 'Philips HUE',
   },
   description: {
     en: 'Manage Philips HUE',
-    fr: 'Philips HUE'
+    fr: 'Philips HUE',
   },
-  supportedLanguage: ['en', 'fr']
-}
+  image: 'lisa-plugin-hue.png',
+  supportedLanguage: ['en', 'fr'],
+};

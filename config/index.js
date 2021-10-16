@@ -1,2 +1,7 @@
-exports.devices = require('./devices')
-exports.infos = require('./infos')
+import devices from './devices.js';
+import infos from './infos.js';
+
+export default {
+  'devices': devices,
+  'infos': infos,
+};

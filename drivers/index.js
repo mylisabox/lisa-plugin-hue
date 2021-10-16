@@ -1,1 +1,5 @@
-exports.light = require('./light')
+import LightDriver from './light.js';
+
+export default {
+  'light': LightDriver,
+};

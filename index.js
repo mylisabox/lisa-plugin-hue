@@ -1,23 +1,27 @@
-'use strict'
+import {Plugin} from 'lisa-plugin';
+import {createRequire} from 'module';
+import config from './config/index.js';
+import drivers from './drivers/index.js';
+import BridgesManager from './lib/BridgesManager.js';
 
-const Plugin = require('lisa-plugin')
-const BridgesManager = require('./lib').BridgesManager
+const require = createRequire(import.meta.url);
+const pkg = require('./package.json');
 
-module.exports = class HuePlugin extends Plugin {
-
+export default class HuePlugin extends Plugin {
   /**
    * Initialisation of your plugin
    * Called once, when plugin is loaded
-   * @returns Promise
+   * @return Promise
    */
   init() {
+    this.log.info('HuePlugin');
     if (!this.bridgesManager) {
-      this.bridgesManager = new BridgesManager(this.lisa)
+      this.bridgesManager = new BridgesManager(this.lisa);
     }
     return super.init().then(() => this.bridgesManager.search())
-      .catch(err => {
-        this.log.error(err)
-      })
+      .catch((err) => {
+        this.log.error(err.toString());
+      });
   }
 
   /**
@@ -27,60 +31,62 @@ module.exports = class HuePlugin extends Plugin {
    * @return Promise
    */
   interact(action, infos) {
-    let room = infos.fields.room || infos.context.room
-    const device = infos.fields.device
+    let room = infos.fields.room || infos.context.room;
+    const device = infos.fields.device;
     if (device && device.pluginName !== this.fullName) {
-      return Promise.resolve()
+      return Promise.resolve();
     }
-    const options = {}
+    const options = {};
     switch (action) {
+      case 'LIGHT_ALL_TURN_ON':
+        options['powered'] = true;
+        room = null;
+        break;
       case 'LIGHT_ALL_TURN_OFF':
-        options['onoff'] = 'off'
-        room = null
-        break
+        options['powered'] = false;
+        room = null;
+        break;
       case 'LIGHT_TURN_ON':
       case 'DEVICE_TURN_ON':
-        options['onoff'] = 'on'
+        options['powered'] = true;
         if (infos.fields.number) {
-          options['dim'] = infos.fields.number
+          options['intensity'] = infos.fields.number;
         }
         if (infos.fields.color) {
-          options['hue'] = infos.fields.color.value
+          options['color'] = infos.fields.color.value;
         }
-        break
+        break;
       case 'LIGHT_TURN_OFF':
       case 'DEVICE_TURN_OFF':
-        options['onoff'] = 'off'
-        break
+        options['powered'] = false;
+        break;
       case 'LIGHT_BRIGHTNESS':
-        options['dim'] = infos.fields.number
-        break
+        options['intensity'] = infos.fields.number;
+        break;
       default:
-        return Promise.resolve()
+        return Promise.resolve();
     }
 
-    const criteria = {}
+    const criteria = {};
     if (room) {
-      criteria.roomId = room.id
+      criteria.roomId = room.id;
 
-      return this.lisa.findDevices(criteria).then(devices => {
-        return this.drivers['light'].setDevicesValues(devices, options)
-      })
-    }
-    else if (device) {
-      return this.drivers['light'].setDevicesValues([device], options)
-    }
-    else {
-      return this.drivers['light'].setDevicesValues(null, options)
+      return this.lisa.findDevices(criteria).then((devices) => {
+        return this.drivers['light'].setDevicesValues(devices, options);
+      });
+    } else if (device) {
+      return this.drivers['light'].setDevicesValues([device], options);
+    } else {
+      return this.drivers['light'].setDevicesValues(null, options);
     }
   }
 
   constructor(app) {
     super(app, {
-      drivers: require('./drivers'),
-      config: require('./config'),
-      pkg: require('./package')
-    })
+      drivers: drivers,
+      config: config,
+      pkg: pkg,
+    });
     this.bridgesManager = null;
   }
 }
